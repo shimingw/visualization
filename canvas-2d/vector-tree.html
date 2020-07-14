@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>canvas</title>
+    <style>
+      #canvas {
+        border: 1px solid #333;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas width="512" height="512" id="canvas"></canvas>
+    <script>
+      /*
+       * @Description: 使用向量的原理画一棵树
+       * @Author: shimingwen
+       * @Date: 2020-07-13 16:47:49
+       * @LastEditTime: 2020-07-14 11:06:43
+       * @LastEditors: shimingwen
+       * API:
+       * Math.atan2(1,1) 根据坐标点计算线与x轴的夹角
+       *
+       */
+
+      const canvas = document.querySelector('#canvas')
+      const ctx = canvas.getContext('2d')
+      ctx.translate(0, canvas.height)
+      ctx.scale(1, -1)
+      ctx.lineCap = 'round'
+
+      class Vector2D extends Array {
+        constructor(x = 1, y = 0) {
+          super(x, y)
+        }
+        set x(v) {
+          this[0] = v
+        }
+
+        set y(v) {
+          this[1] = v
+        }
+
+        get x() {
+          return this[0]
+        }
+
+        get y() {
+          return this[1]
+        }
+        copy() {
+          return new Vector2D(this.x, this.y)
+        }
+        add(Vector2D) {
+          this.x += Vector2D.x
+          this.y += Vector2D.y
+          return this
+        }
+        scale(a) {
+          this.x *= a
+          this.y *= a
+          return this
+        }
+        rotate(rad) {
+          const [x, y] = this
+          const length = Math.hypot(x, y)
+          const c = Math.cos(rad)
+          const s = Math.sin(rad)
+          this.x = length * c
+          this.y = length * s
+
+          return this
+        }
+      }
+
+      /**
+       *
+       * @param {*} ctx
+       * @param {*} v0 起始向量
+       * @param {*} length 当前树枝的长度
+       * @param {*} thickness 当前树枝的粗细
+       * @param {*} dir 当前树枝的方向，用与 x 轴的夹角表示，单位是弧度。
+       * @param {*} bias 一个随机偏向因子，用来让树枝的朝向有一定的随机性
+       */
+      function drawBranch(context, v0, length, thickness, dir, bias) {
+        const v = new Vector2D().rotate(dir).scale(length)
+        const v1 = v0.copy().add(v)
+
+        context.lineWidth = thickness
+        context.beginPath()
+        context.moveTo(...v0)
+        context.lineTo(...v1)
+        context.stroke()
+
+        if (thickness > 2) {
+          const left = dir + 0.3
+          drawBranch(context, v1, length * 0.9, thickness * 0.8, left)
+          const right = dir - 0.3
+          drawBranch(context, v1, length * 0.9, thickness * 0.8, right)
+        }
+        if (thickness < 5 && Math.random() < 0.3) {
+          context.save()
+          context.strokeStyle = '#c72c35'
+          const th = Math.random() * 6 + 3
+          context.lineWidth = th
+          context.beginPath()
+          context.moveTo(...v1)
+          context.lineTo(v1.x, v1.y - 2)
+          context.stroke()
+          context.restore()
+        }
+      }
+
+      const v0 = new Vector2D(256, 0)
+      drawBranch(ctx, v0, 50, 15, Math.PI / 2, 3)
+    </script>
+  </body>
+</html>

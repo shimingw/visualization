@@ -1,4 +1,19 @@
-/*
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>canvas</title>
+    <style>
+        #canvas{
+            border:1px solid #333;
+        }
+    </style>
+</head>
+<body>
+    <canvas width="512" height="512" id="canvas"></canvas>
+    <script>
+        /*
  * @Description: 使用webgl绘制三角形
  * @Author: shimingwen
  * @Date: 2020-07-13 16:47:49
@@ -58,3 +73,6 @@ gl.enableVertexAttribArray(vPosition);
 
 gl.clear(gl.COLOR_BUFFER_BIT);
 gl.drawArrays(gl.TRIANGLES, 0, points.length / 2);
+    </script>
+</body>
+</html>
